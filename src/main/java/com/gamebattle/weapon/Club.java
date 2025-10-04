@@ -6,7 +6,7 @@ package com.gamebattle.weapon;
 
 public class Club extends Weapon{
 
-    public Club(String name, int damage) {
+    public Club() {
         super("Дубина", 3, "Дробящий");
     }
 

@@ -5,17 +5,16 @@ package com.gamebattle.character;
  */
 
 public class Character {
+    private String name = "Unnamed";
+    private final CharacterClass characterClass;
+    private int level = 1;
+    private double health = 0.0;
+    private int strength = 0;
+    private int agility = 0;
+    private int endurance = 0;
 
-    String name;
-    String characterClass;
-    int level;
-    double health;
-    int strength;
-    int agility;
-    int endurance;
-
-    public Character(String name, String characterClass, int level, double health, int strength, int agility,
-                     int endurance) {
+    public Character(String name, CharacterClass characterClass, int level,
+                     double health, int strength, int agility, int endurance) {
         this.name = name;
         this.characterClass = characterClass;
         this.level = level;
@@ -37,13 +36,31 @@ public class Character {
         return health > 0;
     }
 
+    public void levelUp() {
+        this.level++;
+
+        double healthBonus = this.characterClass.getHealthUpByLevel(this);
+        this.health += healthBonus;
+
+        System.out.println(this.name + " повысил уровень до " + this.level + "! +" + healthBonus + " к здоровью");
+
+        // Применяем бонусы класса в зависимости от уровня
+        if (this.level == 1) {
+            this.characterClass.useClassBonusLevelOne(this);
+        } else if (this.level == 2) {
+            this.characterClass.useClassBonusLevelTwo(this);
+        } else if (this.level == 3) {
+            this.characterClass.useClassBonusLevelThree(this);
+        }
+    }
+
 
     // Геттеры
     public String getName() {
         return this.name;
     }
 
-    public String getCharacterClass() {
+    public CharacterClass getCharacterClass() {
         return this.characterClass;
     }
 

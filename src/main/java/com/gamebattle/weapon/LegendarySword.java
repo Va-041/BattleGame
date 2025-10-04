@@ -6,7 +6,7 @@ package com.gamebattle.weapon;
 
 public class LegendarySword extends Weapon {
 
-    public LegendarySword(String name, int damage) {
+    public LegendarySword() {
         super("Легендарный меч", 10, "Рубящий");
     }
 

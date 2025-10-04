@@ -6,7 +6,7 @@ package com.gamebattle.weapon;
 
 public class Spear extends Weapon {
 
-    public Spear(String name, int damage) {
+    public Spear() {
         super("Копьё", 2,"Колющий");
     }
 
