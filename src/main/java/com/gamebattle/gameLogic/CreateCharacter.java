@@ -1,87 +1,155 @@
 package com.gamebattle.gameLogic;
 
+/**
+ *  Класс для создания игрового персонажа
+ */
+
 import com.gamebattle.character.Barbarian;
 import com.gamebattle.character.Character;
 import com.gamebattle.character.CharacterClass;
 import com.gamebattle.character.Rogue;
 import com.gamebattle.character.Warrior;
+import com.gamebattle.customExceptions.CharacterCreationException;
+import java.util.Random;
 import java.util.Scanner;
 
 public class CreateCharacter {
 
-    public static Character createNewCharacter() {
-        String characterName = getCharacterName();
-        CharacterClass characterClass = chooseCharacterClass();
+    private static final Random random = new Random();
+    private static final Scanner scanner = new Scanner(System.in);
 
-        Character character = new Character(characterName, characterClass, getCharacterLevel(), getCharacterHealth(),
-                getCharacterStrength(), getCharacterAgility(), getCharacterEndurance());
+    public static Character createNewCharacter() throws CharacterCreationException {
+        try {
+            String characterName = getCharacterName();
+            CharacterClass characterClass = chooseCharacterClass();
 
-        printCharacterInfo(character);
+            int strength = getRandomAttribute();
+            int agility = getRandomAttribute();
+            int endurance = getRandomAttribute();
 
-        return character;
+            double totalHealth = characterClass.getBaseHealth() + endurance;
+
+            Character character = new Character(characterName, characterClass,
+                    totalHealth,
+                    strength,
+                    agility,
+                    endurance);
+
+            System.out.println();
+            printCharacterInfo(character);
+            return character;
+
+        } catch (Exception e) {
+            System.out.println("Ошибка создания персонажа: " + e.getMessage());
+            throw new CharacterCreationException("Не удалось создать персонажа", e);
+        }
+    }
+
+    private static double calculateTotalHealth(CharacterClass characterClass, int endurance) {
+        return characterClass.getBaseHealth() + endurance;
+    }
+
+    public static int getRandomAttribute() {
+        return random.nextInt(3) + 1;
     }
 
     public static String getCharacterName() {
-        System.out.print("\n\nПожалуйста, придумайте имя вашему игровому персонажу: ");
-        return getScannerInput().nextLine();
-    }
-
-    public static CharacterClass chooseCharacterClass() {
-        System.out.println("\nВыберите класс персонажа:");
-        System.out.println("1. " + new Warrior().getClassName() + " - " + new Warrior().getDescription());
-        System.out.println("2. " + new Barbarian().getClassName() + " - " + new Barbarian().getDescription());
-        System.out.println("3. " + new Rogue().getClassName() + " - " + new Rogue().getDescription());
-        System.out.print("\nВаш выбор (1-3): ");
 
         while (true) {
-            String input = getScannerInput().nextLine();
-            switch (input) {
-                case "1":
-                    return new Warrior();
-                case "2":
-                    return new Barbarian();
-                case "3":
-                    return new Rogue();
-                default:
-                    System.out.print("Неверный выбор. Пожалуйста, введите 1, 2 или 3: ");
+            System.out.print("\n\nПожалуйста, придумайте имя вашему игровому персонажу: ");
+            String name = scanner.nextLine().trim();
+
+            if (name == null || name.isEmpty()) {
+                System.out.println("Имя не может быть пустым! Пожалуйста, введите имя.");
+                continue;
+            }
+
+            if (name.length() < 2) {
+                System.out.println("Имя должно содержать минимум 2 символа.");
+                continue;
+            }
+
+            if (name.length() > 20) {
+                System.out.println("Имя не должно превышать 20 символов.");
+                continue;
+            }
+
+            System.out.print("Вы выбрали имя: \"" + name + "\". Это правильное имя? (да/нет): ");
+            String confirmation = scanner.nextLine().trim().toLowerCase();
+
+            if (confirmation.equals("да") || confirmation.equals("д") || confirmation.equals("y") || confirmation.equals("yes")) {
+                return name;
+            } else {
+                System.out.println("Хорошо, давайте попробуем другое имя.");
             }
         }
     }
 
-    public static int getCharacterLevel() {
-        return 1;
-    }
+    public static CharacterClass chooseCharacterClass() {
+        System.out.println("\nВыберите основной класс персонажа: ");
+        System.out.println("\n1. " + new Rogue().getClassName() + " - " + new Rogue().getDescription());
+        System.out.println(new Rogue().getRogueClassInfo());
+        System.out.println("\n2. " + new Warrior().getClassName() + " - " + new Warrior().getDescription());
+        System.out.println(new Warrior().getWarriorClassInfo());
+        System.out.println("\n3. " + new Barbarian().getClassName() + " - " + new Barbarian().getDescription());
+        System.out.println(new Barbarian().getBarbarianClassInfo());
+        System.out.print("\nВаш выбор (1-3): ");
 
-    public static double getCharacterHealth() {
-        return 10.0;
-    }
+        while (true) {
+            try {
+                int inputNumber = scanner.nextInt();
+                scanner.nextLine();
 
-    public static int getCharacterStrength() {
-        return 1;
-    }
-
-    public static int getCharacterAgility() {
-        return 1;
-    }
-
-    public static int getCharacterEndurance() {
-        return 1;
+                switch (inputNumber) {
+                    case 1:
+                        return new Rogue();
+                    case 2:
+                        return new Warrior();
+                    case 3:
+                        return new Barbarian();
+                    default:
+                        System.out.print("Неверный выбор. Пожалуйста, введите 1, 2 или 3: ");
+                }
+            } catch (Exception e) {
+                System.out.print("Неверный ввод. Пожалуйста, введите число 1, 2 или 3: ");
+                scanner.nextLine();
+            }
+        }
     }
 
     public static void printCharacterInfo(Character character) {
-        System.out.println("\n=== ИНФОРМАЦИЯ О ПЕРСОНАЖЕ ===");
-        System.out.println("Имя персонажа: " + character.getName());
-        System.out.println("Класс: " + character.getCharacterClass().getClassName());
-        System.out.println("Уровень: " + character.getLevel());
-        System.out.println("Здоровье: " + character.getHealth());
-        System.out.println("Сила: " + character.getStrength());
-        System.out.println("Ловкость: " + character.getAgility());
-        System.out.println("Выносливость: " + character.getEndurance());
-        System.out.println("Оружие: " + character.getCharacterClass().getStartWeapon().getName());
-        System.out.println("==============================");
-    }
-
-    public static Scanner getScannerInput() {
-        return new Scanner(System.in);
+        System.out.printf("""
+                        +------------------------------------+
+                        |       ИНФОРМАЦИЯ О ПЕРСОНАЖЕ       |
+                        +------------------------------------+
+                        | Имя: %-29s |
+                        | Уровень персонажа: %-15d |
+                        | Основной класс: %-18s |
+                        | Уровень основного класса: %-8d |
+                        +------------------------------------+
+                        | Здоровье: %-24.1f |
+                        | Сила: %-28d |
+                        | Ловкость: %-24d |
+                        | Выносливость: %-20d |
+                        +------------------------------------+
+                        | Стартовое оружие: %-16s |
+                        | Урон оружия: %-21d |
+                        | Бонус урона от силы: %-13d |
+                        | Общий урон: %-22d |
+                        +------------------------------------+
+                        %n""",
+                character.getName(),
+                character.getCharacterLevel(),
+                character.getMainClass().getClassName(),
+                character.getClasses().getFirst().getLevel(),
+                character.getHealth(),
+                character.getStrength(),
+                character.getAgility(),
+                character.getEndurance(),
+                character.getMainClass().getStartWeapon().getName(),
+                character.getMainClass().getStartWeapon().getDamage(),
+                character.getStrength(),
+                character.getTotalDamage()
+        );
     }
 }

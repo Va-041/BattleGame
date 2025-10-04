@@ -29,6 +29,10 @@ public abstract class Monster {
         this.rewardForWinning = rewardForWinning;
     }
 
+    public int getWeaponDamage() {
+        return this.weaponDamage;
+    }
+
     public void takeDamage(int weaponDamage) {
         this.health -= weaponDamage;
 
@@ -50,23 +54,18 @@ public abstract class Monster {
     public String getName() {
         return this.name;
     }
-
     public double getHealth() {
         return this.health;
     }
-
     public int getStrength() {
         return this.strength;
     }
-
     public int getAgility() {
         return this.agility;
     }
-
     public int getEndurance() {
         return this.endurance;
     }
-
     public String getFeatures() {
         return this.features;
     }
