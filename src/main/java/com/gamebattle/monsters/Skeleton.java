@@ -1,10 +1,14 @@
 package com.gamebattle.monsters;
 
+import com.gamebattle.weapon.Club;
+import com.gamebattle.weapon.Sword;
+
 public class Skeleton extends Monster {
 
-    public Skeleton(String name, double health, int strength, int agility, int endurance, int weaponDamage,
-                    String features,  String rewardForWinning) {
-        super("Скелет", 10, 2, 2, 1, 2,
-                "Двойной урон от дробящего оружия", "Дубина");
+    public Skeleton() {
+        super("Скелет", 10, 2, 2, 1,
+                new Club(),
+                "Двойной урон от дробящего оружия",
+                new Club());
     }
 }

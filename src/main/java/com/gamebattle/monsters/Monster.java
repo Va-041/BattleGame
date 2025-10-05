@@ -1,6 +1,7 @@
 package com.gamebattle.monsters;
 
 import com.gamebattle.character.Character;
+import com.gamebattle.weapon.Weapon;
 
 /**
  *  Класс для описания монстров
@@ -13,24 +14,40 @@ public abstract class Monster {
     int strength;
     int agility;
     int endurance;
-    int weaponDamage;
+    Weapon weapon;
     String features;
-    String rewardForWinning;
+    Weapon rewardForWinning;
 
-    public Monster(String name, double health, int strength, int agility, int endurance, int weaponDamage,
-                   String features, String rewardForWinning) {
+    public Monster(String name, double health, int strength, int agility, int endurance, Weapon weapon,
+                   String features, Weapon rewardForWinning) {
         this.name = name;
         this.health = health;
         this.strength = strength;
         this.agility = agility;
         this.endurance = endurance;
-        this.weaponDamage = weaponDamage;
+        this.weapon = weapon;
         this.features = features;
         this.rewardForWinning = rewardForWinning;
     }
 
+    public String getMonsterParameters() {
+        String monsterParameters =
+                "------------------------" + "\n" +
+                "Здоровье:\t\t\t" + this.health + "\n" +
+                "Сила:\t\t\t\t" + this.strength + "\n" +
+                "Ловкость:\t\t\t" + this.agility + "\n" +
+                "Выносливость:\t\t" + this.endurance + "\n" +
+                "Оружие:\t\t\t\t" + this.weapon.getName() + " (урон: " + this.weapon.getDamage() + ")\n" +
+                "------------------------" + "\n" +
+                "Особенности:\n" + this.features + "\n" +
+                "------------------------" + "\n" +
+                "Награда за убийство: " + this.rewardForWinning.getName() + "\n";
+
+        return monsterParameters;
+    }
+
     public int getWeaponDamage() {
-        return this.weaponDamage;
+        return this.weapon.getDamage();
     }
 
     public void takeDamage(int weaponDamage) {
@@ -46,8 +63,10 @@ public abstract class Monster {
     }
 
     public void attack(Character target) {
-        System.out.println("Монстр " + name + " атакует " + target.getName() + " и наносит " + weaponDamage + " урона!");
-        target.takeDamage(weaponDamage);
+        System.out.println("Монстр " + name + " атакует " + target.getName() +
+                " используя " + weapon.getName() + " и наносит " +
+                getWeaponDamage() + " урона!");
+        target.takeDamage(getWeaponDamage());
     }
 
     // Геттеры
@@ -69,7 +88,7 @@ public abstract class Monster {
     public String getFeatures() {
         return this.features;
     }
-    public String getRewardForWinning() {
+    public Weapon getRewardForWinning() {
         return this.rewardForWinning;
     }
 

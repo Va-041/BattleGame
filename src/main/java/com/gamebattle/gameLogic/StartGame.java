@@ -4,19 +4,27 @@ package com.gamebattle.gameLogic;
  *  Класс для описания запуска и проведения игры
  */
 
+import com.gamebattle.Location.LocationAndLore;
 import com.gamebattle.character.Character;
 import com.gamebattle.character.CharacterClassLevel;
+import com.gamebattle.character.LevelManager;
 import com.gamebattle.customExceptions.CharacterCreationException;
 import java.util.List;
+import java.util.Scanner;
+
+import static com.gamebattle.gameLogic.BattleSystem.monstersDefeated;
 
 public class StartGame {
+
+    private static Character player;
+    public static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws CharacterCreationException {
         welcomeMessage();
         getGameInformation();
         getCharacter();
 
-        getStartLocation();
+        startGameLoop();
     }
 
     public static void welcomeMessage() {
@@ -60,13 +68,89 @@ public class StartGame {
     }
 
     public static void getCharacter() throws CharacterCreationException {
-        Character player = CreateCharacter.createNewCharacter();
-
-        printFinalCharacterInfo(player);
+        player = CreateCharacter.createNewCharacter();
     }
 
-    public static void getStartLocation() {
-        LocationAndLore.getStartLocation();
+    public static void startGameLoop() {
+        // Начинаем с первой локации
+        LocationAndLore.Location currentLocation = LocationNavigation.getStartLocation();
+
+        while (currentLocation != null) {
+            LocationNavigation.displayCurrentLocations();
+
+            // Проводим бой
+            BattleResult result = Battle.startBattle(player, currentLocation.monster);
+
+            if (result.isVictory()) {
+                handleVictory(player, currentLocation);
+                // Получаем следующую локацию
+                currentLocation = LocationNavigation.getNextLocations();
+            } else {
+                if (handleDefeat()) {
+                    break; // Игрок хочет выйти
+                }
+                // Если игрок хочет продолжить, начинаем заново
+                currentLocation = LocationNavigation.getStartLocation();
+            }
+        }
+
+        System.out.println("🎉 Все локации исследованы!");
+    }
+
+    private static void handleVictory(Character player, LocationAndLore.Location location) {
+        monstersDefeated++;
+
+        BattleSystem.restoreHealth(player);
+        BattleSystem.checkVictory(monstersDefeated);
+
+        // Предложить замену оружия
+        BattleSystem.offerWeaponDrop(player, location.monster);
+
+        LevelManager.levelUpCharacter(player);
+        LevelManager.levelUpClass(player);
+
+
+
+        printFinalCharacterInfo(player);
+
+        // Пауза перед следующей локацией
+        waitForContinue();
+    }
+
+    private static boolean handleDefeat() {
+        System.out.println("💀 Вы погибли...");
+        BattleSystem.playerDefeated();
+        monstersDefeated = 0;
+
+        // хочет ли игрок попробовать снова
+        while (true) {
+            System.out.println("Хотите попробовать снова? (да/нет)");
+            String answer = scanner.nextLine().toLowerCase();
+
+            if (answer.equals("да") || answer.equals("д")) {
+                try {
+                    getCharacter(); // Создаем нового персонажа
+                    return false; // Продолжаем игру
+                } catch (CharacterCreationException e) {
+                    System.out.println("Ошибка создания персонажа: " + e.getMessage());
+                    return true; // Выход при ошибке
+                }
+            } else if (answer.equals("нет") || answer.equals("н")) {
+                return true; // Выход из игры
+            } else {
+                System.out.println("Пожалуйста, введите 'да' или 'нет'");
+            }
+        }
+    }
+
+    private static void waitForContinue() {
+
+        System.out.println("\n\nНажмите Enter для продолжения... \n");
+        try {
+            System.in.read();
+        } catch (Exception e) {
+            // Игнорируем ошибки ввода
+        }
     }
 
     public static void printFinalCharacterInfo(Character character) {
@@ -100,7 +184,7 @@ public class StartGame {
                     | Бонус урона от силы: %-19d |
                     | Общий урон: %-28d |
                     +------------------------------------------+
-                    %n""",
+                    """,
                 character.getName(),
                 character.getCharacterLevel(),
                 classesString,
@@ -114,7 +198,4 @@ public class StartGame {
                 character.getTotalDamage()
         );
     }
-
-
-
 }

@@ -48,19 +48,6 @@ public class Character {
         return getMainClass().getStartWeapon().getDamage() + this.strength;
     }
 
-//    public double getHitChance() {
-//        // Шанс попадания зависит от ловкости (cлучайное число от единицы до суммы (ловкости персонажа на момент боя + ловкость монстра)
-//        // если полученное число меньше или равно ловкости монстра - промах, иначе попадание.
-//        return 1.0;
-//    }
-//
-//    public double getEvasionChance() {
-//        // Шанс уклонения зависит от ловкости (и его нужно сделать в обратном варианте шанса попадания: т.е. когда
-//        // рассчитывается шанс попадания у монстра: cлучайное число от единицы до суммы (ловкости персонажа на момент боя + ловкость монстра)
-//        // если полученное число меньше нашей ловкости - мы уклоняемся. Если число больше нашей ловкости - мы получаем удар).
-//        return 2.0;
-//    }
-
     // Методы для применения бонусов
     public void applyHealthBonus(double bonus) {
         this.health += bonus;
@@ -91,18 +78,6 @@ public class Character {
         return findClass(characterClass) != null;
     }
 
-    // Геттеры
-    public String getName() { return this.name; }
-    public int getCharacterLevel() { return this.characterLevel; }
-    public List<CharacterClassLevel> getClasses() { return new ArrayList<>(this.classes); }
-    public double getHealth() { return this.health; }
-    public int getStrength() { return this.strength; }
-    public int getAgility() { return this.agility; }
-    public int getEndurance() { return this.endurance; }
-    public CharacterClass getMainClass() {
-        return classes.isEmpty() ? null : classes.getFirst().getCharacterClass();
-    }
-
     public void takeDamage(double damage) {
         this.health -= damage;
         if (this.health <= 0) {
@@ -113,5 +88,23 @@ public class Character {
 
     public boolean isAlive() {
         return health > 0;
+    }
+
+    public void restoreHealth() {
+        this.health = getHealth();
+    }
+
+
+
+    // Геттеры
+    public String getName() { return this.name; }
+    public int getCharacterLevel() { return this.characterLevel; }
+    public List<CharacterClassLevel> getClasses() { return new ArrayList<>(this.classes); }
+    public double getHealth() { return this.health; }
+    public int getStrength() { return this.strength; }
+    public int getAgility() { return this.agility; }
+    public int getEndurance() { return this.endurance; }
+    public CharacterClass getMainClass() {
+        return classes.isEmpty() ? null : classes.getFirst().getCharacterClass();
     }
 }
