@@ -14,18 +14,18 @@ public abstract class Monster {
     int strength;
     int agility;
     int endurance;
-    Weapon weapon;
+    int damage;
     String features;
     Weapon rewardForWinning;
 
-    public Monster(String name, double health, int strength, int agility, int endurance, Weapon weapon,
+    public Monster(String name, double health, int strength, int agility, int endurance, int damage,
                    String features, Weapon rewardForWinning) {
         this.name = name;
         this.health = health;
         this.strength = strength;
         this.agility = agility;
         this.endurance = endurance;
-        this.weapon = weapon;
+        this.damage = damage;
         this.features = features;
         this.rewardForWinning = rewardForWinning;
     }
@@ -37,7 +37,7 @@ public abstract class Monster {
                 "Сила:\t\t\t\t" + this.strength + "\n" +
                 "Ловкость:\t\t\t" + this.agility + "\n" +
                 "Выносливость:\t\t" + this.endurance + "\n" +
-                "Оружие:\t\t\t\t" + this.weapon.getName() + " (урон: " + this.weapon.getDamage() + ")\n" +
+                "Урон:\t\t\t\t" +  this.damage + "\n"+
                 "------------------------" + "\n" +
                 "Особенности:\n" + this.features + "\n" +
                 "------------------------" + "\n" +
@@ -46,8 +46,8 @@ public abstract class Monster {
         return monsterParameters;
     }
 
-    public int getWeaponDamage() {
-        return this.weapon.getDamage();
+    public int getDamage() {
+        return this.damage;
     }
 
     public void takeDamage(int weaponDamage) {
@@ -63,10 +63,8 @@ public abstract class Monster {
     }
 
     public void attack(Character target) {
-        System.out.println("Монстр " + name + " атакует " + target.getName() +
-                " используя " + weapon.getName() + " и наносит " +
-                getWeaponDamage() + " урона!");
-        target.takeDamage(getWeaponDamage());
+        System.out.println("Монстр " + name + " атакует " + target.getName() + " и наносит " + getDamage() + " урона!");
+        target.takeDamage(getDamage());
     }
 
     // Геттеры

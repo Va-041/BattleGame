@@ -6,8 +6,7 @@ import com.gamebattle.weapon.Sword;
 public class Skeleton extends Monster {
 
     public Skeleton() {
-        super("Скелет", 10, 2, 2, 1,
-                new Club(),
+        super("Скелет", 10, 2, 2, 1, 2,
                 "Двойной урон от дробящего оружия",
                 new Club());
     }

@@ -15,15 +15,17 @@ public class Character {
     private int strength = 0;
     private int agility = 0;
     private int endurance = 0;
+    private int damageBonus = 0;
 
     public Character(String name, CharacterClass startingClass,
-                     double health, int strength, int agility, int endurance) {
+                     int strength, int agility, int endurance) {
         this.name = name;
-        this.health = health;
         this.strength = strength;
         this.agility = agility;
         this.endurance = endurance;
         addClass(startingClass, 1);
+
+        this.health = getMaxHealth();
     }
 
     // Методы для изменения состояния
@@ -32,7 +34,9 @@ public class Character {
     }
 
     public void addClass(CharacterClass characterClass, int level) {
+        System.out.println("Отладка addClass: Добавляем класс " + characterClass.getClassName() + " уровень " + level);
         this.classes.add(new CharacterClassLevel(characterClass, level));
+        System.out.println("Отладка addClass: Теперь классы: " + this.classes);
     }
 
     public void increaseClassLevel(CharacterClass characterClass) {
@@ -42,15 +46,27 @@ public class Character {
         }
     }
 
-    // методы для расчёта характеристик
-    public int getTotalDamage() {
-        // Урон = урон оружия + сила
+    // Базовый урон (постоянный)
+    public int getBaseDamage() {
         return getMainClass().getStartWeapon().getDamage() + this.strength;
     }
 
-    // Методы для применения бонусов
+    // Общий урон (базовый + временные бонусы)
+    public int getTotalDamage() {
+        return getBaseDamage() + this.damageBonus;
+    }
+
+    // Методы для применения бонусов классов
     public void applyHealthBonus(double bonus) {
         this.health += bonus;
+    }
+
+    public void applyDamageBonus(int bonus) {
+        this.damageBonus += bonus;
+    }
+
+    public void resetDamageBonus() {
+        this.damageBonus = 0;
     }
 
     public void applyStrengthBonus(int bonus) {
@@ -65,6 +81,7 @@ public class Character {
         this.endurance += bonus;
     }
 
+
     public CharacterClassLevel findClass(CharacterClass characterClass) {
         for (CharacterClassLevel classLevel : classes) {
             if (classLevel.getCharacterClass().getClass() == characterClass.getClass()) {
@@ -74,16 +91,14 @@ public class Character {
         return null;
     }
 
+
     public boolean hasClass(CharacterClass characterClass) {
         return findClass(characterClass) != null;
     }
 
+
     public void takeDamage(double damage) {
         this.health -= damage;
-        if (this.health <= 0) {
-            this.health = 0;
-            System.out.println(name + " повержен!");
-        }
     }
 
     public boolean isAlive() {
@@ -91,7 +106,22 @@ public class Character {
     }
 
     public void restoreHealth() {
-        this.health = getHealth();
+        this.health = getMaxHealth();
+    }
+
+    public double getMaxHealth() {
+        double maxHealth = 0;
+        // здоровье от всех классов
+        for (CharacterClassLevel classLevel : classes) {
+            maxHealth += classLevel.getCharacterClass().getBaseHealth();
+            // Также добавляем здоровье за уровни классов (кроме первого)
+            if (classLevel.getLevel() > 1) {
+                maxHealth += classLevel.getCharacterClass().getHealthUpByClassLevel(this) * (classLevel.getLevel() - 1);
+            }
+        }
+        // Добавляем здоровье от выносливости
+        maxHealth += this.endurance;
+        return maxHealth;
     }
 
 
@@ -104,6 +134,7 @@ public class Character {
     public int getStrength() { return this.strength; }
     public int getAgility() { return this.agility; }
     public int getEndurance() { return this.endurance; }
+    public int getDamageBonus() { return this.damageBonus; }
     public CharacterClass getMainClass() {
         return classes.isEmpty() ? null : classes.getFirst().getCharacterClass();
     }

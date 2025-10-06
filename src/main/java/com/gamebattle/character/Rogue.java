@@ -11,6 +11,7 @@ public class Rogue extends CharacterClass {
 
     private boolean hasSneakAttack = false;
     private boolean hasAgilityBonus = false;
+    private boolean hasPoisonBonus = false;
 
     public Rogue() {
         super("Разбойник", "Проворный и хитрый боец", new Dagger());
@@ -36,6 +37,11 @@ public class Rogue extends CharacterClass {
     }
 
     @Override
+    public double getHealthUpByClassLevel(Character target) {
+        return 4.0;
+    }
+
+    @Override
     public void useClassBonusLevelOne(Character target) {
         this.hasSneakAttack = true;
         System.out.println("Разбойник получает бонус 'Скрытая атака': +1 к урону при преимуществе в ловкости");
@@ -50,25 +56,33 @@ public class Rogue extends CharacterClass {
 
     @Override
     public void useClassBonusLevelThree(Character target) {
+        this.hasPoisonBonus = true;
         System.out.println("Разбойник получает бонус 'Яд': Наносит дополнительные +1 урона на втором ходу, " +
                 "+2 на третьем и так далее");
     }
 
-    @Override
-    public double getHealthUpByClassLevel(Character target) {
-        return 4.0;
-    }
+    public void applyDamageBonuses(Character rogue, Monster target, int turnCount) {
 
-    public int applySneakAttackBonus(Character rogue, Monster target) {
+        // Бонус скрытой атаки (1 уровень)
         if (hasSneakAttack && rogue.getAgility() > target.getAgility()) {
             System.out.println("⚡ Скрытая атака! Ловкость разбойника выше, +1 к урону");
-            return 1; // дополнительный урон
+            rogue.applyDamageBonus(1);
         }
-        return 0; // без бонуса
+
+        // Бонус яда (3 уровень)
+        if (hasPoisonBonus && turnCount >= 2) {
+            int poisonBonus = turnCount - 1;
+            System.out.println("☠️ Яд! Дополнительный урон: +" + poisonBonus);
+            rogue.applyDamageBonus(poisonBonus);
+        }
     }
 
     // Геттер для проверки наличия способности
     public boolean hasSneakAttack() {
         return hasSneakAttack;
+    }
+
+    public boolean hasPoisonBonus() {
+        return hasPoisonBonus;
     }
 }

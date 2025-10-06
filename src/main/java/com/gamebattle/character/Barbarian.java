@@ -30,6 +30,10 @@ public class Barbarian extends CharacterClass {
         return 6.0;
     }
 
+    @Override
+    public double getHealthUpByClassLevel(Character target) {
+        return 6.0;
+    }
 
     @Override
     public void useClassBonusLevelOne(Character target) {
@@ -44,10 +48,5 @@ public class Barbarian extends CharacterClass {
     @Override
     public void useClassBonusLevelThree(Character target) {
         // реализация для 3 уровня
-    }
-
-    @Override
-    public double getHealthUpByClassLevel(Character target) {
-        return 6.0;
     }
 }

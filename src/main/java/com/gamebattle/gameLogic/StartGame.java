@@ -86,7 +86,7 @@ public class StartGame {
                 // Получаем следующую локацию
                 currentLocation = LocationNavigation.getNextLocations();
             } else {
-                if (handleDefeat()) {
+                if (handleDefeat(player)) {
                     break; // Игрок хочет выйти
                 }
                 // Если игрок хочет продолжить, начинаем заново
@@ -98,10 +98,14 @@ public class StartGame {
     }
 
     private static void handleVictory(Character player, LocationAndLore.Location location) {
-        monstersDefeated++;
+        BattleSystem.monstersDefeated++;
 
         BattleSystem.restoreHealth(player);
-        BattleSystem.checkVictory(monstersDefeated);
+
+        // Проверяем победу и выходим если игра завершена
+        if (BattleSystem.checkVictory(player)) {
+            return;
+        }
 
         // Предложить замену оружия
         BattleSystem.offerWeaponDrop(player, location.monster);
@@ -109,34 +113,91 @@ public class StartGame {
         LevelManager.levelUpCharacter(player);
         LevelManager.levelUpClass(player);
 
-
-
         printFinalCharacterInfo(player);
 
         // Пауза перед следующей локацией
         waitForContinue();
     }
 
-    private static boolean handleDefeat() {
-        System.out.println("💀 Вы погибли...");
+    private static boolean handleDefeat(Character character) {
+
+        System.out.printf("""
+                    %n
+                    +------------------------------------------+
+                    |                КОНЕЦ  ИГРЫ               |
+                    +------------------------------------------+
+                    |          💀 Ваш персонаж мёртв           |
+                    |                                          |
+                    | Имя: %-35s |
+                    | Уровень персонажа: %-21d |
+                    | Оружие: %-32s |
+                    +------------------------------------------+
+                    """,
+                character.getName(),
+                character.getCharacterLevel(),
+                character.getMainClass().getStartWeapon().getName()
+                );
+
         BattleSystem.playerDefeated();
         monstersDefeated = 0;
 
+        System.out.println("\n\n=========================================================\n");
         // хочет ли игрок попробовать снова
         while (true) {
-            System.out.println("Хотите попробовать снова? (да/нет)");
+            System.out.print("Хотите попробовать снова? (да/нет):  ");
             String answer = scanner.nextLine().toLowerCase();
 
-            if (answer.equals("да") || answer.equals("д")) {
+            if (answer.equals("да") || answer.equals("д") || answer.equals("yes") || answer.equals("y")) {
                 try {
-                    getCharacter(); // Создаем нового персонажа
-                    return false; // Продолжаем игру
+                    getCharacter();
+                    return false;
                 } catch (CharacterCreationException e) {
                     System.out.println("Ошибка создания персонажа: " + e.getMessage());
-                    return true; // Выход при ошибке
+                    return true;
                 }
-            } else if (answer.equals("нет") || answer.equals("н")) {
-                return true; // Выход из игры
+            } else if (answer.equals("нет") || answer.equals("н") || answer.equals("no") || answer.equals("n")) {
+                return true;
+            } else {
+                System.out.println("Пожалуйста, введите 'да' или 'нет'");
+            }
+        }
+    }
+
+    public static boolean gameIsOver(Character character) {
+        System.out.printf("""
+                    %n
+                    +------------------------------------------+
+                    |              ИГРА ПРОЙДЕНА               |
+                    +------------------------------------------+
+                    |         Поздравляем с победой!           |
+                    |      Вы победили 5 монстров подряд!      |
+                    +------------------------------------------+
+                    """
+        );
+
+        printFinalCharacterInfo(character);
+
+        // Сбрасываем счетчик
+        BattleSystem.monstersDefeated = 0;
+
+        System.out.println("\n\n============================================\n");
+        System.out.println("\n\n============================================\n");
+
+        // хочет ли игрок попробовать снова
+        while (true) {
+            System.out.print("Хотите попробовать снова? (да/нет):  ");
+            String answer = scanner.nextLine().toLowerCase();
+
+            if (answer.equals("да") || answer.equals("д") || answer.equals("yes") || answer.equals("y")) {
+                try {
+                    getCharacter();
+                    return false; // игра продолжается
+                } catch (CharacterCreationException e) {
+                    System.out.println("Ошибка создания персонажа: " + e.getMessage());
+                    return true; // игра завершается
+                }
+            } else if (answer.equals("нет") || answer.equals("н") || answer.equals("no") || answer.equals("n")) {
+                return true; // игра завершается
             } else {
                 System.out.println("Пожалуйста, введите 'да' или 'нет'");
             }
@@ -145,7 +206,7 @@ public class StartGame {
 
     private static void waitForContinue() {
 
-        System.out.println("\n\nНажмите Enter для продолжения... \n");
+        System.out.println("\n\nНажмите Enter для продолжения... ");
         try {
             System.in.read();
         } catch (Exception e) {
@@ -166,6 +227,7 @@ public class StartGame {
         }
         String classesString = classesBuilder.toString();
 
+        System.out.println();
         System.out.printf("""
                     +------------------------------------------+
                     |          ИНФОРМАЦИЯ О ПЕРСОНАЖЕ          |

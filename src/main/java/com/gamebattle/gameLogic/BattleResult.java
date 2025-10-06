@@ -6,6 +6,11 @@ public class BattleResult {
     private int playerHits;
     private int monsterAttacks;
     private int monsterHits;
+    private int turnCounter;
+
+    public BattleResult() {
+        this.turnCounter = 0;
+    }
 
     public void addMonsterAttack(boolean hit) {
         this.monsterAttacks++;
@@ -21,14 +26,14 @@ public class BattleResult {
         }
     }
 
-//    public double getPlayerAccuracy() {
-//        return playerAttacks > 0 ? (double) playerHits / playerAttacks * 100 : 0;
-//    }
-//
-//    public double getMonsterAccuracy() {
-//        return monsterAttacks > 0 ? (double) monsterHits / monsterAttacks * 100 : 0;
-//    }
+    public int getTurnCount() {
+        return turnCounter;
+    }
 
+    // Метод для увеличения счетчика ходов
+    public void incrementTurnCount() {
+        this.turnCounter++;
+    }
 
     public boolean isVictory() {
         return victory;

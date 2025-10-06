@@ -27,13 +27,13 @@ public class CreateCharacter {
             int agility = getRandomAttribute();
             int endurance = getRandomAttribute();
 
-            double totalHealth = characterClass.getBaseHealth() + endurance;
-
+            // Убрать ручной расчет здоровья - Character сам рассчитает
             Character character = new Character(characterName, characterClass,
-                    totalHealth,
                     strength,
                     agility,
                     endurance);
+
+            applyInitialClassBonuses(character, characterClass);
 
             System.out.println();
             printCharacterInfo(character);
@@ -45,12 +45,16 @@ public class CreateCharacter {
         }
     }
 
-    private static double calculateTotalHealth(CharacterClass characterClass, int endurance) {
-        return characterClass.getBaseHealth() + endurance;
-    }
-
     public static int getRandomAttribute() {
         return random.nextInt(3) + 1;
+    }
+
+    private static void applyInitialClassBonuses(Character character, CharacterClass characterClass) {
+        System.out.println("\nПрименяем бонусы начального класса...");
+
+        // Специфичные бонусы класса 1 уровня
+        characterClass.useClassBonusLevelOne(character);
+        System.out.println();
     }
 
     public static String getCharacterName() {

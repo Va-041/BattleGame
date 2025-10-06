@@ -23,7 +23,8 @@ public abstract class CharacterClass {
     public abstract void useClassBonusLevelTwo(Character target);
     public abstract void useClassBonusLevelThree(Character target);
 
-    public abstract double getHealthUpByClassLevel(Character target);   // значение здоровья увеличивается при каждом увеличении уровня игрового класса
+    public abstract double getHealthUpByClassLevel(Character target);   // значение здоровья увеличивается при каждом
+                                                                        // увеличении уровня игрового класса
 
 
     // Геттеры
