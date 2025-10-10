@@ -10,6 +10,8 @@ import com.gamebattle.character.CharacterClass;
 import com.gamebattle.character.Rogue;
 import com.gamebattle.character.Warrior;
 import com.gamebattle.customExceptions.CharacterCreationException;
+import com.gamebattle.gameUtils.SleepTime;
+
 import java.util.Random;
 import java.util.Scanner;
 
@@ -27,7 +29,6 @@ public class CreateCharacter {
             int agility = getRandomAttribute();
             int endurance = getRandomAttribute();
 
-            // Убрать ручной расчет здоровья - Character сам рассчитает
             Character character = new Character(characterName, characterClass,
                     strength,
                     agility,
@@ -60,7 +61,7 @@ public class CreateCharacter {
     public static String getCharacterName() {
 
         while (true) {
-            System.out.print("\n\nПожалуйста, придумайте имя вашему игровому персонажу: ");
+            System.out.print("\nПожалуйста, придумайте имя вашему персонажу: ");
             String name = scanner.nextLine().trim();
 
             if (name == null || name.isEmpty()) {
@@ -73,8 +74,8 @@ public class CreateCharacter {
                 continue;
             }
 
-            if (name.length() > 20) {
-                System.out.println("Имя не должно превышать 20 символов.");
+            if (name.length() > 13) {
+                System.out.println("Имя не должно превышать 13 символов.");
                 continue;
             }
 
@@ -90,13 +91,22 @@ public class CreateCharacter {
     }
 
     public static CharacterClass chooseCharacterClass() {
+        SleepTime.sleepSeconds(1);
         System.out.println("\nВыберите основной класс персонажа: ");
+
+        SleepTime.sleepSeconds(1);
         System.out.println("\n1. " + new Rogue().getClassName() + " - " + new Rogue().getDescription());
         System.out.println(new Rogue().getRogueClassInfo());
+
+        SleepTime.sleepSeconds(1);
         System.out.println("\n2. " + new Warrior().getClassName() + " - " + new Warrior().getDescription());
         System.out.println(new Warrior().getWarriorClassInfo());
+
+        SleepTime.sleepSeconds(1);
         System.out.println("\n3. " + new Barbarian().getClassName() + " - " + new Barbarian().getDescription());
         System.out.println(new Barbarian().getBarbarianClassInfo());
+
+        SleepTime.sleep(300);
         System.out.print("\nВаш выбор (1-3): ");
 
         while (true) {
@@ -122,38 +132,31 @@ public class CreateCharacter {
     }
 
     public static void printCharacterInfo(Character character) {
-        System.out.printf("""
-                        +------------------------------------+
-                        |       ИНФОРМАЦИЯ О ПЕРСОНАЖЕ       |
-                        +------------------------------------+
-                        | Имя: %-29s |
-                        | Уровень персонажа: %-15d |
-                        | Основной класс: %-18s |
-                        | Уровень основного класса: %-8d |
-                        +------------------------------------+
-                        | Здоровье: %-24.1f |
-                        | Сила: %-28d |
-                        | Ловкость: %-24d |
-                        | Выносливость: %-20d |
-                        +------------------------------------+
-                        | Стартовое оружие: %-16s |
-                        | Урон оружия: %-21d |
-                        | Бонус урона от силы: %-13d |
-                        | Общий урон: %-22d |
-                        +------------------------------------+
-                        %n""",
-                character.getName(),
-                character.getCharacterLevel(),
-                character.getMainClass().getClassName(),
-                character.getClasses().getFirst().getLevel(),
-                character.getHealth(),
-                character.getStrength(),
-                character.getAgility(),
-                character.getEndurance(),
-                character.getMainClass().getStartWeapon().getName(),
-                character.getMainClass().getStartWeapon().getDamage(),
-                character.getStrength(),
-                character.getTotalDamage()
-        );
+        String[] lines = {
+                "+------------------------------------+",
+                "|       ИНФОРМАЦИЯ О ПЕРСОНАЖЕ       |",
+                "+------------------------------------+",
+                String.format("| Имя: %-29s |", character.getName()),
+                String.format("| Уровень персонажа: %-15d |", character.getCharacterLevel()),
+                String.format("| Основной класс: %-18s |", character.getMainClass().getClassName()),
+                String.format("| Уровень основного класса: %-8d |", character.getClasses().getFirst().getLevel()),
+                "+------------------------------------+",
+                String.format("| Здоровье: %-24.1f |", character.getHealth()),
+                String.format("| Сила: %-28d |", character.getStrength()),
+                String.format("| Ловкость: %-24d |", character.getAgility()),
+                String.format("| Выносливость: %-20d |", character.getEndurance()),
+                "+------------------------------------+",
+                String.format("| Стартовое оружие: %-16s |", character.getMainClass().getStartWeapon().getName()),
+                String.format("| Урон оружия: %-21d |", character.getMainClass().getStartWeapon().getDamage()),
+                String.format("| Бонус урона от силы: %-13d |", character.getStrength()),
+                String.format("| Общий урон: %-22d |", character.getTotalDamage()),
+                "+------------------------------------+"
+        };
+
+        for (String line : lines) {
+            System.out.println(line);
+            SleepTime.sleep(100);
+        }
+        System.out.println("\n");
     }
 }

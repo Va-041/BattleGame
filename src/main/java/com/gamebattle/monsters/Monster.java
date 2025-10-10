@@ -1,6 +1,7 @@
 package com.gamebattle.monsters;
 
 import com.gamebattle.character.Character;
+import com.gamebattle.gameUtils.SleepTime;
 import com.gamebattle.weapon.Weapon;
 
 /**
@@ -31,20 +32,46 @@ public abstract class Monster {
     }
 
     public String getMonsterParameters() {
-        String monsterParameters =
-                "------------------------" + "\n" +
-                "Здоровье:\t\t\t" + this.health + "\n" +
-                "Сила:\t\t\t\t" + this.strength + "\n" +
-                "Ловкость:\t\t\t" + this.agility + "\n" +
-                "Выносливость:\t\t" + this.endurance + "\n" +
-                "Урон:\t\t\t\t" +  this.damage + "\n"+
-                "------------------------" + "\n" +
-                "Особенности:\n" + this.features + "\n" +
-                "------------------------" + "\n" +
-                "Награда за убийство: " + this.rewardForWinning.getName() + "\n";
+        String[] parameters = {
+                "------------------------",
+                "Здоровье:\t\t\t" + this.health,
+                "Сила:\t\t\t\t" + this.strength,
+                "Ловкость:\t\t\t" + this.agility,
+                "Выносливость:\t\t" + this.endurance,
+                "Урон:\t\t\t\t" + this.damage,
+                "------------------------",
+                "Особенности:",
+                this.features,
+                "------------------------",
+                "Награда за убийство: " + this.rewardForWinning.getName(),
+                "------------------------"
+        };
 
-        return monsterParameters;
+        return String.join("\n", parameters);
     }
+
+    public void printMonsterParametersWithDelay() {
+        String[] parameters = {
+                "------------------------",
+                "Здоровье:\t\t\t" + this.health,
+                "Сила:\t\t\t\t" + this.strength,
+                "Ловкость:\t\t\t" + this.agility,
+                "Выносливость:\t\t" + this.endurance,
+                "Урон:\t\t\t\t" + this.damage,
+                "------------------------",
+                "Особенности:",
+                this.features,
+                "------------------------",
+                "Награда за убийство: " + this.rewardForWinning.getName(),
+                "------------------------"
+        };
+
+        for (String line : parameters) {
+            System.out.println(line);
+            SleepTime.sleep(300);
+        }
+    }
+
 
     public int getDamage() {
         return this.damage;

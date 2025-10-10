@@ -1,6 +1,8 @@
 package com.gamebattle.gameLogic;
 
 import com.gamebattle.Location.LocationAndLore;
+import com.gamebattle.gameUtils.SleepTime;
+
 import java.util.*;
 
 public class LocationNavigation {
@@ -63,28 +65,51 @@ public class LocationNavigation {
             return;
         }
 
+        // Выводим pathToLocation с задержкой
+        printWithDelay(location.pathToLocation.split("\n"));
+
+        // Выводим description с задержкой
+        printWithDelay(location.description.split("\n"));
+
         int totalWidth = 51;
         int nameLength = location.name.length();
         int padding = (totalWidth - nameLength) / 2;
 
-        // информация о локации
-        System.out.println(location.pathToLocation);
-        System.out.println(location.description);
+        // Выводим название локации в рамке с задержкой
+        System.out.println();
+        printWithDelay(new String[]{
+                "+-------------------------------------------------+",
+                "|" + " ".repeat(padding) + location.name + " ".repeat(totalWidth - nameLength - padding - 2) + "|",
+                "+-------------------------------------------------+",
+                ""
+        });
 
-        System.out.printf("""
-                +-------------------------------------------------+
-                |%s%s%s|
-                +-------------------------------------------------+
-                
-                """,
-                " ".repeat(padding),
-                location.name,
-                " ".repeat(totalWidth - nameLength - padding - 2)
-        );
+        // Выводим информацию о противнике с задержкой
+        printWithDelay(new String[]{
+                "Противник:\t\t\t" + location.monster.getName(),
+                "",
+                "Характеристики:"
+        });
 
-        System.out.println("Противник:\t\t\t" + location.monster.getName());
-        System.out.println("\nХарактеристики:\n" + location.monster.getMonsterParameters());
-        System.out.println("Описание: \n" + location.mobDescription);
+        // ВЫВОДИМ ХАРАКТЕРИСТИКИ МОНСТРА С ЗАДЕРЖКОЙ
+        location.monster.printMonsterParametersWithDelay();
+
+        printWithDelay(new String[]{
+                "",
+                "Описание:"
+        });
+
+        printWithDelay(location.mobDescription.split("\n"));
+    }
+
+    //  метод для вывода описания локаций
+    private static void printWithDelay(String[] lines) {
+        for (String line : lines) {
+            if (!line.trim().isEmpty()) {
+                System.out.println(line);
+                SleepTime.sleepSeconds(1);
+            }
+        }
     }
 
     // Метод для сброса использованных локаций (для новой игры)

@@ -9,6 +9,8 @@ import com.gamebattle.character.Character;
 import com.gamebattle.character.CharacterClassLevel;
 import com.gamebattle.character.LevelManager;
 import com.gamebattle.customExceptions.CharacterCreationException;
+import com.gamebattle.gameUtils.SleepTime;
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -20,55 +22,92 @@ public class StartGame {
     public static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws CharacterCreationException {
-        welcomeMessage();
-        getGameInformation();
+//        welcomeMessage();
+//        getGameInformation();
         getCharacter();
+//        getIntroductionInformation();
 
         startGameLoop();
     }
 
     public static void welcomeMessage() {
+        SleepTime.sleepSeconds(1);
+        System.out.println("\n\n====================================================================");
+        SleepTime.sleep(300);
         System.out.println("\nДобро пожаловать в Epic Battle Game");
     }
 
     public static void getGameInformation() {
+        SleepTime.sleepSeconds(1);
         System.out.println("\nПравила игры: \n");
-        System.out.println(
-                """
-                    1. В начале игрок выбирает класс персонажа (воин, варвар или разбойник).
-                       У персонажа есть 3 атрибута:
-                       • Сила: значение силы прибавляется к урону от оружия.
-                       • Ловкость: повышает шанс попасть или уклониться от атаки.
-                       • Выносливость: значение выносливости прибавляется к здоровью при каждом повышении уровня.
-                       У нового персонажа они равны случайному числу от 1 до 3 включительно.
-                    
-                    2. Персонаж сражается со случайным монстром:
-                       Бой идёт по ходам, персонаж и монстр атакуют друг друга по очереди. Первым ходит тот, у кого выше
-                       ловкость. Если она одинаковая, то первым ходит персонаж.
-                       • При атаке сначала вычисляется шанс попадания: берётся случайное число от единицы до суммы
-                         ловкости атакующего и цели. Если это число меньше или равно ловкости цели - атака промахнулась.
-                       • Если атака попала, то считается изначальный урон: это урон оружия атакующего + его сила.
-                       • Применяются все эффекты на атаки у атакующего (Порыв к действию, Ярость и другие).
-                       • Применяются все эффекты на урон цели (Каменная кожа, Щит и другие).
-                       • Если итоговый урон больше 0 - его значение вычитается из здоровья цели.
-                       • Если здоровье цели опустилось до 0 или ниже - бой заканчивается победой атакующего.
-                       • Если цель выжила, то теперь её очередь атаковать. Переходим к пункту 1.
-                       • После каждого боя здоровье персонажа восстанавливается до максимума. Затем игроку предлагают
-                         повысить уровень персонажа.
-                       • Как и в "серьёзных" RPG, у нас есть возможность мультикласса:
-                         при повышении уровня игрок может выбрать не только тот класс, с которым он начал игру, но и любой
-                         другой. Тогда он получит +1 уровень в этом классе, и все бонусы от этого уровня.
-                       • Максимальный суммарный уровень персонажа - 3. Когда он достигнут, игроку больше не предлагают
-                         повысить уровень, после боя только восстанавливается здоровье.
-                    
-                    4. Если персонаж проиграл - игроку предлагается создать нового персонажа.
-                    5. Если персонаж победил 5 монстров подряд - игра пройдена.
-                    """
-        );
+        SleepTime.sleepSeconds(1);
+
+        String[] rules = {
+                "1. В начале игрок выбирает класс персонажа (воин, варвар или разбойник).",
+                "   У персонажа есть 3 атрибута:",
+                "   • Сила: значение силы прибавляется к урону от оружия.",
+                "   • Ловкость: повышает шанс попасть или уклониться от атаки.",
+                "   • Выносливость: значение выносливости прибавляется к здоровью при каждом повышении уровня.",
+                "   У нового персонажа они равны случайному числу от 1 до 3 включительно.",
+                "",
+                "2. Персонаж сражается со случайным монстром:",
+                "   Бой идёт по ходам, персонаж и монстр атакуют друг друга по очереди. Первым ходит тот, у кого выше",
+                "   ловкость. Если она одинаковая, то первым ходит персонаж.",
+                "   • При атаке сначала вычисляется шанс попадания: берётся случайное число от единицы до суммы",
+                "     ловкости атакующего и цели. Если это число меньше или равно ловкости цели - атака промахнулась",
+                "     (в информации хода ты будешь видеть какое число выпало и какое требовалось для успешной атаки).",
+                "   • Если атака попала, то считается изначальный урон: это урон оружия атакующего + его сила.",
+                "   • Применяются все эффекты на атаки у атакующего (Порыв к действию, Ярость и другие).",
+                "   • Применяются все эффекты на урон цели (Каменная кожа, Щит и другие).",
+                "   • Если итоговый урон больше 0 - его значение вычитается из здоровья цели.",
+                "   • Если здоровье цели опустилось до 0 или ниже - бой заканчивается победой атакующего.",
+                "   • Если цель выжила, то теперь её очередь атаковать. Переходим к пункту 1.",
+                "   • После каждого боя здоровье персонажа восстанавливается до максимума. Затем игроку предлагают",
+                "     повысить уровень персонажа.",
+                "   • Как и в \"серьёзных\" RPG, у нас есть возможность мультикласса:",
+                "     при повышении уровня игрок может выбрать не только тот класс, с которым он начал игру, но и любой",
+                "     другой. Тогда он получит +1 уровень в этом классе, и все бонусы от этого уровня.",
+                "   • Максимальный суммарный уровень персонажа - 3. Когда он достигнут, игроку больше не предлагают",
+                "     повысить уровень, после боя только восстанавливается здоровье.",
+                "",
+                "4. Если персонаж проиграл - игроку предлагается создать нового персонажа.",
+                "5. Если персонаж победил 5 монстров подряд - игра пройдена."
+        };
+
+        for (String line : rules) {
+            System.out.println(line);
+            SleepTime.sleep(300);
+        }
+
+        SleepTime.sleepSeconds(1);
+        System.out.println("\nНа этом всё, желаю удачи в прохождении игры!");
+        SleepTime.sleep(300);
+        System.out.println("====================================================================\n");
+    }
+
+    public static void getIntroductionInformation() {
+        SleepTime.sleepSeconds(1);
+        LocationAndLore.getIntroduction();
     }
 
     public static void getCharacter() throws CharacterCreationException {
+        SleepTime.sleepSeconds(1);
+        System.out.println("\nИдёт загрузка...");
+
+        SleepTime.sleepSeconds(2);
+        System.out.println("\nВам нужно создать игрового персонажа.");
+        SleepTime.sleep(300);
         player = CreateCharacter.createNewCharacter();
+
+        SleepTime.sleep(300);
+        System.out.println("Загружаем локации...");
+        SleepTime.sleep(500);
+        System.out.println("Спавним монстров...");
+        SleepTime.sleep(700);
+        System.out.println("Наделяем вас силой...");
+        SleepTime.sleepSeconds(1);
+        System.out.println("\nИгра начинается!\n");
+        SleepTime.sleepSeconds(1);
     }
 
     public static void startGameLoop() {
@@ -215,7 +254,6 @@ public class StartGame {
     }
 
     public static void printFinalCharacterInfo(Character character) {
-
         StringBuilder classesBuilder = new StringBuilder();
         List<CharacterClassLevel> classes = character.getClasses();
 
@@ -227,37 +265,30 @@ public class StartGame {
         }
         String classesString = classesBuilder.toString();
 
-        System.out.println();
-        System.out.printf("""
-                    +------------------------------------------+
-                    |          ИНФОРМАЦИЯ О ПЕРСОНАЖЕ          |
-                    +------------------------------------------+
-                    | Имя: %-35s |
-                    | Уровень персонажа: %-21d |
-                    | Классы: %-32s |
-                    +------------------------------------------+
-                    | Здоровье: %-30.1f |
-                    | Сила: %-34d |
-                    | Ловкость: %-30d |
-                    | Выносливость: %-26d |
-                    +------------------------------------------+
-                    | Оружие: %-32s |
-                    | Урон оружия: %-27d |
-                    | Бонус урона от силы: %-19d |
-                    | Общий урон: %-28d |
-                    +------------------------------------------+
-                    """,
-                character.getName(),
-                character.getCharacterLevel(),
-                classesString,
-                character.getHealth(),
-                character.getStrength(),
-                character.getAgility(),
-                character.getEndurance(),
-                character.getMainClass().getStartWeapon().getName(),
-                character.getMainClass().getStartWeapon().getDamage(),
-                character.getStrength(),
-                character.getTotalDamage()
-        );
+        String[] characterInfo = {
+                "",
+                "+------------------------------------------+",
+                "|          ИНФОРМАЦИЯ О ПЕРСОНАЖЕ          |",
+                "+------------------------------------------+",
+                String.format("| Имя: %-35s |", character.getName()),
+                String.format("| Уровень персонажа: %-21d |", character.getCharacterLevel()),
+                String.format("| Классы: %-32s |", classesString),
+                "+------------------------------------------+",
+                String.format("| Здоровье: %-30.1f |", character.getHealth()),
+                String.format("| Сила: %-34d |", character.getStrength()),
+                String.format("| Ловкость: %-30d |", character.getAgility()),
+                String.format("| Выносливость: %-26d |", character.getEndurance()),
+                "+------------------------------------------+",
+                String.format("| Оружие: %-32s |", character.getMainClass().getStartWeapon().getName()),
+                String.format("| Урон оружия: %-27d |", character.getMainClass().getStartWeapon().getDamage()),
+                String.format("| Бонус урона от силы: %-19d |", character.getStrength()),
+                String.format("| Общий урон: %-28d |", character.getMainClass().getStartWeapon().getDamage() + character.getStrength()),
+                "+------------------------------------------+"
+        };
+
+        for (String line : characterInfo) {
+            System.out.println(line);
+            SleepTime.sleep(300);
+        }
     }
 }

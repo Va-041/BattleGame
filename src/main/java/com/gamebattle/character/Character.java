@@ -4,6 +4,8 @@ package com.gamebattle.character;
  * Класс для описания игрового персонажа
  */
 
+import com.gamebattle.weapon.Weapon;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,9 +36,7 @@ public class Character {
     }
 
     public void addClass(CharacterClass characterClass, int level) {
-        System.out.println("Отладка addClass: Добавляем класс " + characterClass.getClassName() + " уровень " + level);
         this.classes.add(new CharacterClassLevel(characterClass, level));
-        System.out.println("Отладка addClass: Теперь классы: " + this.classes);
     }
 
     public void increaseClassLevel(CharacterClass characterClass) {
@@ -65,10 +65,6 @@ public class Character {
         this.damageBonus += bonus;
     }
 
-    public void resetDamageBonus() {
-        this.damageBonus = 0;
-    }
-
     public void applyStrengthBonus(int bonus) {
         this.strength += bonus;
     }
@@ -82,6 +78,12 @@ public class Character {
     }
 
 
+    public void resetDamageBonus() {
+        this.damageBonus = 0;
+    }
+
+
+
     public CharacterClassLevel findClass(CharacterClass characterClass) {
         for (CharacterClassLevel classLevel : classes) {
             if (classLevel.getCharacterClass().getClass() == characterClass.getClass()) {
@@ -90,7 +92,6 @@ public class Character {
         }
         return null;
     }
-
 
     public boolean hasClass(CharacterClass characterClass) {
         return findClass(characterClass) != null;
@@ -114,7 +115,7 @@ public class Character {
         // здоровье от всех классов
         for (CharacterClassLevel classLevel : classes) {
             maxHealth += classLevel.getCharacterClass().getBaseHealth();
-            // Также добавляем здоровье за уровни классов (кроме первого)
+            // добавляем здоровье за уровни классов (кроме первого)
             if (classLevel.getLevel() > 1) {
                 maxHealth += classLevel.getCharacterClass().getHealthUpByClassLevel(this) * (classLevel.getLevel() - 1);
             }
@@ -122,6 +123,19 @@ public class Character {
         // Добавляем здоровье от выносливости
         maxHealth += this.endurance;
         return maxHealth;
+    }
+
+    public void replaceWeapon(Weapon newWeapon) {
+        CharacterClass mainClass = this.getMainClass();
+
+        // Просто заменяем оружие в текущем классе
+        try {
+            java.lang.reflect.Field weaponField = mainClass.getClass().getSuperclass().getDeclaredField("startWeapon");
+            weaponField.setAccessible(true);
+            weaponField.set(mainClass, newWeapon);
+        } catch (Exception e) {
+            System.out.println("Ошибка при замене оружия: " + e.getMessage());
+        }
     }
 
 
