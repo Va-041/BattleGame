@@ -12,6 +12,6 @@ public class Club extends Weapon{
 
     @Override
     public void useWeapon() {
-        System.out.println("Размахивается оружием " + name + " с уроном" + damage + " ед.");
+        System.out.println("Размахивается оружием " + name + " с уроном " + damage + " ед.");
     }
 }

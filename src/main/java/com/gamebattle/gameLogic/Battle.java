@@ -1,5 +1,9 @@
 package com.gamebattle.gameLogic;
 
+/**
+ *  Класс для описания главных факторов битвы
+ */
+
 import com.gamebattle.character.Character;
 import com.gamebattle.gameUtils.SleepTime;
 import com.gamebattle.monsters.Monster;

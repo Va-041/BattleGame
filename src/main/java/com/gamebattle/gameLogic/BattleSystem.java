@@ -11,13 +11,16 @@ import com.gamebattle.gameUtils.SleepTime;
 import com.gamebattle.monsters.*;
 import com.gamebattle.character.Character;
 import com.gamebattle.weapon.Weapon;
-
 import java.util.Scanner;
 
 public class BattleSystem {
 
     public static int monstersDefeated = 0;
 
+    // метод для полного сброса состояния игры
+    public static void resetGameState() {
+        monstersDefeated = 0;
+    }
 
     // метод победы если было побеждено 5 монстров подряд
     public static boolean checkVictory( Character player) {
@@ -25,6 +28,10 @@ public class BattleSystem {
             return StartGame.gameIsOver(player);
         }
         return false;
+    }
+
+    public static void playerDefeated() {
+        GameState.resetAll();
     }
 
     // метод восстанавливающий хп до максимума при победе
@@ -37,8 +44,15 @@ public class BattleSystem {
         System.out.println("Очки здоровья: " + oldPlayerHealth + " -> " + player.getHealth());
     }
 
+
+
     // метод предлагающий заменить оружие на новое после победы моба
     public static void offerWeaponDrop(Character player, Monster monster) {
+        // Проверяем, не завершена ли уже игра или это новая игра
+        if (monstersDefeated >= 5 || GameState.isNewGame()) {
+            return; // Не предлагаем замену оружия если игра завершена или это новая игра
+        }
+
         SleepTime.sleepSeconds(1);
         Weapon droppedWeapon = monster.getRewardForWinning();
         System.out.println("Монстр выбросил оружие: " + droppedWeapon.getName() + ".");
@@ -134,7 +148,9 @@ public class BattleSystem {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("\nВы уверены, что хотите заменить оружие?");
+        SleepTime.sleep(300);
         System.out.println("Текущее: " + currentWeapon.getName() + " (урон: " + currentWeapon.getDamage() + ")");
+        SleepTime.sleep(300);
         System.out.println("Новое: " + newWeapon.getName() + " (урон: " + newWeapon.getDamage() + ")");
         SleepTime.sleep(300);
         System.out.print("Подтвердите замену (да/нет): ");
@@ -146,28 +162,20 @@ public class BattleSystem {
 
             player.replaceWeapon(newWeapon);
 
+            SleepTime.sleep(300);
             System.out.println("\nОружие успешно заменено!");
+            SleepTime.sleep(300);
             System.out.println("Теперь вы используете: " + newWeapon.getName());
             SleepTime.sleep(300);
             return true;
         } else {
+            SleepTime.sleep(300);
             System.out.println("Замена отменена.");
             SleepTime.sleep(300);
             return false;
         }
     }
 
-
-    // метод возвращающий игрока к созданию персонажа при поражении
-    public static void playerDefeated() {
-
-        // если персонаж побежден: сбрасываем пройденные локации, сбрасываем персонажа, сбрасываем счетчик побежденных
-        // монстров, если были.
-        // Спрашивем хочет попробовать ещё раз если да то отправляем на создание персонажа. Если нет выход.
-
-        LocationNavigation.resetUsedLocations();
-        // возврат к созданию персонажа
-    }
 
 
     // метод для атаки игрока
@@ -387,6 +395,4 @@ public class BattleSystem {
 
         return finalDamage;
     }
-
-
 }

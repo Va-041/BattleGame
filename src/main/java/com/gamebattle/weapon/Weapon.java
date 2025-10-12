@@ -1,7 +1,7 @@
 package com.gamebattle.weapon;
 
 /**
- *  Класс для описания оружия
+ *  Общий класс для описания оружия
  */
 
 public class Weapon {

@@ -1,5 +1,9 @@
 package com.gamebattle.monsters;
 
+/**
+ *  Класс для описания монстра - Дракона
+ */
+
 import com.gamebattle.character.Character;
 import com.gamebattle.weapon.LegendarySword;
 

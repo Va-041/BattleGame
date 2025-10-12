@@ -77,12 +77,9 @@ public class Character {
         this.endurance += bonus;
     }
 
-
     public void resetDamageBonus() {
         this.damageBonus = 0;
     }
-
-
 
     public CharacterClassLevel findClass(CharacterClass characterClass) {
         for (CharacterClassLevel classLevel : classes) {
@@ -96,7 +93,6 @@ public class Character {
     public boolean hasClass(CharacterClass characterClass) {
         return findClass(characterClass) != null;
     }
-
 
     public void takeDamage(double damage) {
         this.health -= damage;
@@ -127,8 +123,7 @@ public class Character {
 
     public void replaceWeapon(Weapon newWeapon) {
         CharacterClass mainClass = this.getMainClass();
-
-        // Просто заменяем оружие в текущем классе
+        // заменяем оружие в текущем классе
         try {
             java.lang.reflect.Field weaponField = mainClass.getClass().getSuperclass().getDeclaredField("startWeapon");
             weaponField.setAccessible(true);
@@ -137,8 +132,6 @@ public class Character {
             System.out.println("Ошибка при замене оружия: " + e.getMessage());
         }
     }
-
-
 
     // Геттеры
     public String getName() { return this.name; }
@@ -152,4 +145,5 @@ public class Character {
     public CharacterClass getMainClass() {
         return classes.isEmpty() ? null : classes.getFirst().getCharacterClass();
     }
+
 }

@@ -1,12 +1,12 @@
 package com.gamebattle.monsters;
 
+/**
+ *  Общий класс для описания монстров
+ */
+
 import com.gamebattle.character.Character;
 import com.gamebattle.gameUtils.SleepTime;
 import com.gamebattle.weapon.Weapon;
-
-/**
- *  Класс для описания монстров
- */
 
 public abstract class Monster {
 

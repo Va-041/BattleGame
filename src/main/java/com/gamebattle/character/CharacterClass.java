@@ -25,7 +25,6 @@ public abstract class CharacterClass {
 
     public abstract double getHealthUpByClassLevel(Character target);
 
-
     // Геттеры
     public String getClassName() { return this.className; }
     public String getDescription() { return this.description; }

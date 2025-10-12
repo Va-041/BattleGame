@@ -12,6 +12,6 @@ public class Spear extends Weapon {
 
     @Override
     public void useWeapon() {
-        System.out.println("Производит удар оружием " + name + " с уроном" + damage + " ед.");
+        System.out.println("Производит удар оружием " + name + " с уроном " + damage + " ед.");
     }
 }

@@ -3,6 +3,7 @@ package com.gamebattle.character;
 /**
  * Класс для хранения информации о классе персонажа и его уровне
  */
+
 public class CharacterClassLevel {
     private final CharacterClass characterClass;
     private int level;

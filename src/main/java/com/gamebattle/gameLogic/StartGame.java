@@ -10,11 +10,8 @@ import com.gamebattle.character.CharacterClassLevel;
 import com.gamebattle.character.LevelManager;
 import com.gamebattle.customExceptions.CharacterCreationException;
 import com.gamebattle.gameUtils.SleepTime;
-
 import java.util.List;
 import java.util.Scanner;
-
-import static com.gamebattle.gameLogic.BattleSystem.monstersDefeated;
 
 public class StartGame {
 
@@ -22,11 +19,12 @@ public class StartGame {
     public static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws CharacterCreationException {
+        GameState.resetAll();
+
 //        welcomeMessage();
 //        getGameInformation();
         getCharacter();
 //        getIntroductionInformation();
-
         startGameLoop();
     }
 
@@ -98,6 +96,7 @@ public class StartGame {
         System.out.println("\nВам нужно создать игрового персонажа.");
         SleepTime.sleep(300);
         player = CreateCharacter.createNewCharacter();
+        GameState.setCurrentPlayer(player);
 
         SleepTime.sleep(300);
         System.out.println("Загружаем локации...");
@@ -113,17 +112,20 @@ public class StartGame {
     public static void startGameLoop() {
         // Начинаем с первой локации
         LocationAndLore.Location currentLocation = LocationNavigation.getStartLocation();
+        boolean gameCompleted = false;
 
-        while (currentLocation != null) {
+        while (currentLocation != null && !gameCompleted) {
             LocationNavigation.displayCurrentLocations();
 
             // Проводим бой
             BattleResult result = Battle.startBattle(player, currentLocation.monster);
 
             if (result.isVictory()) {
-                handleVictory(player, currentLocation);
-                // Получаем следующую локацию
-                currentLocation = LocationNavigation.getNextLocations();
+                gameCompleted = handleVictory(player, currentLocation); // ← ИСПОЛЬЗОВАТЬ возвращаемое значение
+                if (!gameCompleted) {
+                    // Получаем следующую локацию только если игра не завершена
+                    currentLocation = LocationNavigation.getNextLocations();
+                }
             } else {
                 if (handleDefeat(player)) {
                     break; // Игрок хочет выйти
@@ -133,22 +135,47 @@ public class StartGame {
             }
         }
 
-        System.out.println("🎉 Все локации исследованы!");
+        if (gameCompleted) {
+            System.out.println("🎉 Игра завершена!");
+        } else if (currentLocation == null) {
+            System.out.println("🎉 Все локации исследованы!");
+        }
     }
 
-    private static void handleVictory(Character player, LocationAndLore.Location location) {
+    // Метод для полного сброса состояния игры
+    private static void resetEverything() {
+        System.out.println("\n🌀 Полный сброс игры...");
+        SleepTime.sleepSeconds(1);
+
+        // Сбрасываем все статические состояния
+        GameState.resetAll();
+
+        // Сбрасываем текущего игрока
+        player = null;
+
+        // Сбрасываем все менеджеры и системы
+        BattleSystem.monstersDefeated = 0;
+    }
+
+    private static boolean handleVictory(Character player, LocationAndLore.Location location) {
+        // Проверяем, не завершена ли уже игра
+        if (BattleSystem.monstersDefeated >= 5) {
+            return true; // ← ДОБАВИТЬ возврат
+        }
+
         BattleSystem.monstersDefeated++;
 
         BattleSystem.restoreHealth(player);
 
         // Проверяем победу и выходим если игра завершена
         if (BattleSystem.checkVictory(player)) {
-            return;
+            return true; // ← ДОБАВИТЬ возврат
         }
 
-        // Предложить замену оружия
+        // Предложить замену оружия (только если игра не завершена)
         BattleSystem.offerWeaponDrop(player, location.monster);
 
+        // Повышение уровня только если игра не завершена
         LevelManager.levelUpCharacter(player);
         LevelManager.levelUpClass(player);
 
@@ -156,10 +183,12 @@ public class StartGame {
 
         // Пауза перед следующей локацией
         waitForContinue();
+
+        // возврат (игра продолжается)
+        return false;
     }
 
     private static boolean handleDefeat(Character character) {
-
         System.out.printf("""
                     %n
                     +------------------------------------------+
@@ -175,12 +204,13 @@ public class StartGame {
                 character.getName(),
                 character.getCharacterLevel(),
                 character.getMainClass().getStartWeapon().getName()
-                );
+        );
 
-        BattleSystem.playerDefeated();
-        monstersDefeated = 0;
+        // ПОЛНЫЙ СБРОС ВСЕГО СОСТОЯНИЯ ИГРЫ
+        resetEverything();
 
         System.out.println("\n\n=========================================================\n");
+
         // хочет ли игрок попробовать снова
         while (true) {
             System.out.print("Хотите попробовать снова? (да/нет):  ");
@@ -188,8 +218,10 @@ public class StartGame {
 
             if (answer.equals("да") || answer.equals("д") || answer.equals("yes") || answer.equals("y")) {
                 try {
+                    // Полный сброс перед созданием нового персонажа
+                    resetEverything();
                     getCharacter();
-                    return false;
+                    return false; // игра продолжается
                 } catch (CharacterCreationException e) {
                     System.out.println("Ошибка создания персонажа: " + e.getMessage());
                     return true;
@@ -216,10 +248,9 @@ public class StartGame {
 
         printFinalCharacterInfo(character);
 
-        // Сбрасываем счетчик
-        BattleSystem.monstersDefeated = 0;
+        // полный сброс состояния игры
+        resetEverything();
 
-        System.out.println("\n\n============================================\n");
         System.out.println("\n\n============================================\n");
 
         // хочет ли игрок попробовать снова
@@ -229,6 +260,8 @@ public class StartGame {
 
             if (answer.equals("да") || answer.equals("д") || answer.equals("yes") || answer.equals("y")) {
                 try {
+                    // Полный сброс перед созданием нового персонажа
+                    resetEverything();
                     getCharacter();
                     return false; // игра продолжается
                 } catch (CharacterCreationException e) {
@@ -244,10 +277,9 @@ public class StartGame {
     }
 
     private static void waitForContinue() {
-
         System.out.println("\n\nНажмите Enter для продолжения... ");
         try {
-            System.in.read();
+            scanner.nextLine();
         } catch (Exception e) {
             // Игнорируем ошибки ввода
         }
@@ -282,7 +314,8 @@ public class StartGame {
                 String.format("| Оружие: %-32s |", character.getMainClass().getStartWeapon().getName()),
                 String.format("| Урон оружия: %-27d |", character.getMainClass().getStartWeapon().getDamage()),
                 String.format("| Бонус урона от силы: %-19d |", character.getStrength()),
-                String.format("| Общий урон: %-28d |", character.getMainClass().getStartWeapon().getDamage() + character.getStrength()),
+                String.format("| Общий урон: %-28d |", character.getMainClass().getStartWeapon().getDamage() +
+                                                        character.getStrength()),
                 "+------------------------------------------+"
         };
 

@@ -1,5 +1,9 @@
 package com.gamebattle.monsters;
 
+/**
+ *  Класс для описания монстра - Голема
+ */
+
 import com.gamebattle.character.Character;
 import com.gamebattle.weapon.Axe;
 

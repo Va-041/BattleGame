@@ -1,8 +1,11 @@
 package com.gamebattle.gameLogic;
 
+/**
+ *  Класс для описания возможности смены локаций
+ */
+
 import com.gamebattle.Location.LocationAndLore;
 import com.gamebattle.gameUtils.SleepTime;
-
 import java.util.*;
 
 public class LocationNavigation {
@@ -65,17 +68,17 @@ public class LocationNavigation {
             return;
         }
 
-        // Выводим pathToLocation с задержкой
+        // Вывод pathToLocation с задержкой
         printWithDelay(location.pathToLocation.split("\n"));
 
-        // Выводим description с задержкой
+        // Вывод description с задержкой
         printWithDelay(location.description.split("\n"));
 
         int totalWidth = 51;
         int nameLength = location.name.length();
         int padding = (totalWidth - nameLength) / 2;
 
-        // Выводим название локации в рамке с задержкой
+        // Вывод названия локации в рамке
         System.out.println();
         printWithDelay(new String[]{
                 "+-------------------------------------------------+",
@@ -84,21 +87,18 @@ public class LocationNavigation {
                 ""
         });
 
-        // Выводим информацию о противнике с задержкой
+        // Вывод информации о противнике
         printWithDelay(new String[]{
                 "Противник:\t\t\t" + location.monster.getName(),
                 "",
                 "Характеристики:"
         });
-
-        // ВЫВОДИМ ХАРАКТЕРИСТИКИ МОНСТРА С ЗАДЕРЖКОЙ
         location.monster.printMonsterParametersWithDelay();
 
         printWithDelay(new String[]{
                 "",
                 "Описание:"
         });
-
         printWithDelay(location.mobDescription.split("\n"));
     }
 

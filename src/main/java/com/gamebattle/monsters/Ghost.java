@@ -1,5 +1,9 @@
 package com.gamebattle.monsters;
 
+/**
+ *  Класс для описания монстра - Призрака
+ */
+
 import com.gamebattle.character.Character;
 import com.gamebattle.weapon.Sword;
 

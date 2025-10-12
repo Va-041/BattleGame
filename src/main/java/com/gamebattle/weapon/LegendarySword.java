@@ -12,6 +12,6 @@ public class LegendarySword extends Weapon {
 
     @Override
     public void useWeapon() {
-        System.out.println("Замахивается оружием " + name + " с уроном" + damage + " ед.");
+        System.out.println("Замахивается оружием " + name + " с уроном " + damage + " ед.");
     }
 }

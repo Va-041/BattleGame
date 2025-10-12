@@ -1,5 +1,9 @@
 package com.gamebattle.gameLogic;
 
+/**
+ *  Класс для описания результатов боя
+ */
+
 public class BattleResult {
     private boolean victory;
     private int playerAttacks;

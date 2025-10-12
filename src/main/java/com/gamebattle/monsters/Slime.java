@@ -1,5 +1,9 @@
 package com.gamebattle.monsters;
 
+/**
+ *  Класс для описания монстра - Слайма
+ */
+
 import com.gamebattle.character.Character;
 import com.gamebattle.weapon.Spear;
 import com.gamebattle.weapon.Weapon;

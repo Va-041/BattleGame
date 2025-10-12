@@ -1,5 +1,9 @@
 package com.gamebattle.gameUtils;
 
+/**
+ *  Класс для создания требуемой задержки в выводе (декоративная)
+ */
+
 public class SleepTime {
 
     public static void sleep(int milliseconds) {

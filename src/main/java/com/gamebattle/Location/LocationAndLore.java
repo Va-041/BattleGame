@@ -1,12 +1,11 @@
 package com.gamebattle.Location;
 
 /**
- *  Класс для описания локаций и внешнего текста
+ *  Класс для описания локаций и истории
  */
 
 import com.gamebattle.gameUtils.SleepTime;
 import com.gamebattle.monsters.*;
-
 import java.util.*;
 
 public class LocationAndLore {
@@ -19,7 +18,8 @@ public class LocationAndLore {
         public final String mobDescription;
         public final String lore;
 
-        public Location(String pathToLocation, String name, String description, Monster monster, String mobDescription, String lore) {
+        public Location(String pathToLocation, String name, String description, Monster monster, String mobDescription,
+                        String lore) {
             this.pathToLocation = pathToLocation;
             this.name = name;
             this.description = description;
@@ -133,8 +133,8 @@ public class LocationAndLore {
 
         locations.put(1, new Location(
                 """
-                        Пробираясь через узкие коридоры подземелья, вдали вы видите свет. Подходя ближе, вы случайно задеваете
-                        череп неизвестного существа. Всё тело пробирает дрожь, но вы продолжаете идти на свет.. 
+                        Пробираясь через узкие коридоры подземелья, вдали вы видите свет. Подходя ближе, вы случайно 
+                        задеваете череп неизвестного существа. Всё тело пробирает дрожь, но вы продолжаете идти на свет.. 
                         Пройдя ещё немного, перед вами открывается огромный арочный дверной проем. Собрав всю волю и силу 
                         внутри себя, делаете шаг в неизведанное..
                         """,

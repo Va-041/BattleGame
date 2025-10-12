@@ -46,6 +46,7 @@ public class CreateCharacter {
         }
     }
 
+    // метод для получения рандомного значения начальных атрибутов
     public static int getRandomAttribute() {
         return random.nextInt(3) + 1;
     }
@@ -59,7 +60,6 @@ public class CreateCharacter {
     }
 
     public static String getCharacterName() {
-
         while (true) {
             System.out.print("\nПожалуйста, придумайте имя вашему персонажу: ");
             String name = scanner.nextLine().trim();

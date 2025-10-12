@@ -1,9 +1,12 @@
 package com.gamebattle.monsters;
 
+/**
+ *  Класс для описания монстра - Скелета
+ */
+
 import com.gamebattle.character.Character;
 import com.gamebattle.weapon.Club;
 import com.gamebattle.weapon.Weapon;
-
 
 public class Skeleton extends Monster {
 
