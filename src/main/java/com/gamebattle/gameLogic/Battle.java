@@ -8,7 +8,7 @@ public class Battle {
 
     public static BattleResult startBattle(Character player, Monster monster) {
         SleepTime.sleepSeconds(1);
-        System.out.println("=======================================================");
+        System.out.println("\n=======================================================");
         SleepTime.sleep(300);
         System.out.println("\t\t\t⚔️ Начинается бой с " + monster.getName() + "!");
         SleepTime.sleep(300);

@@ -72,7 +72,6 @@ public abstract class Monster {
         }
     }
 
-
     public int getDamage() {
         return this.damage;
     }
@@ -93,6 +92,9 @@ public abstract class Monster {
         System.out.println("Монстр " + name + " атакует " + target.getName() + " и наносит " + getDamage() + " урона!");
         target.takeDamage(getDamage());
     }
+
+    public abstract void useSpecialAbility(Character target, int turnCount);
+
 
     // Геттеры
     public String getName() {
@@ -116,5 +118,7 @@ public abstract class Monster {
     public Weapon getRewardForWinning() {
         return this.rewardForWinning;
     }
+
+    public abstract boolean isSpecialAbilityAvailable(int turnCount);
 
 }

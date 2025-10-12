@@ -8,7 +8,7 @@ import com.gamebattle.character.Barbarian;
 import com.gamebattle.character.Rogue;
 import com.gamebattle.character.Warrior;
 import com.gamebattle.gameUtils.SleepTime;
-import com.gamebattle.monsters.Monster;
+import com.gamebattle.monsters.*;
 import com.gamebattle.character.Character;
 import com.gamebattle.weapon.Weapon;
 
@@ -158,17 +158,6 @@ public class BattleSystem {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
     // метод возвращающий игрока к созданию персонажа при поражении
     public static void playerDefeated() {
 
@@ -204,15 +193,25 @@ public class BattleSystem {
             // 2. Применяем временные бонусы
             applyClassDamageBonuses(player, monster, turnCount);
 
-            // 3. Считаем итоговый урон
-            int totalDamage = player.getTotalDamage();
+            // 3. Считаем базовый урон
+            int baseDamage = player.getTotalDamage();
+
+            // 4. Применяем иммунитеты монстров (слайм к рубящему оружию)
+            int totalDamage = applyMonsterImmunities(player, monster, baseDamage);
+
+            // 5. Применяем уязвимости монстров (скелет к дробящему оружию)
+            totalDamage += applyMonsterVulnerabilities(player, monster, baseDamage);
+
+            // 6. Применяем защиты монстров (голем с каменной кожей)
+            totalDamage = applyMonsterDefenses(monster, totalDamage);
+
             double oldMonsterHealth = monster.getHealth();
 
             SleepTime.sleep(300);
             System.out.println(player.getName() + " атакует " + monster.getName() + " и наносит " + totalDamage +
                     " урона! (выпало: " + randomRoll + ")");
 
-            // 4. Вычитаем урон
+            // 7. Вычитаем урон
             monster.takeDamage(totalDamage);
             SleepTime.sleep(300);
             System.out.println("\nОчки здоровья монстра: " + oldMonsterHealth + " --> " + monster.getHealth() +"\n");
@@ -229,6 +228,7 @@ public class BattleSystem {
             return true;
         }
     }
+
     // Метод для применения бонусов урона от всех классов
     private static void applyClassDamageBonuses(Character player, Monster monster, int turnCount) {
         // Для разбойника
@@ -246,55 +246,6 @@ public class BattleSystem {
         if (player.getMainClass() instanceof Barbarian) {
             Barbarian barbarianClass = (Barbarian) player.getMainClass();
             barbarianClass.applyDamageBonuses(player, monster, turnCount);
-        }
-    }
-
-    //  метод для атаки монстра
-    public static boolean monsterAttack(Monster monster, Character player, int turnCounter) {
-        SleepTime.sleep(300);
-        System.out.println("-------------\n" + "Атака монстра\n" + "-------------");
-
-        // 1. Вычисляем шанс попадания: случайное число от 1 до суммы ловкости атакующего и цели
-        int totalAgility = monster.getAgility() + player.getAgility();
-        int randomRoll = (int) (Math.random() * totalAgility) + 1;
-
-        // Если число меньше или равно ловкости цели - атака промахнулась
-        if (randomRoll <= player.getAgility()) {
-            SleepTime.sleep(300);
-            System.out.println("Монстр " + monster.getName() + " промахивается! (выпало: " + randomRoll +
-                    ", нужно больше " + player.getAgility() + ")\n");
-            SleepTime.sleep(300);
-            return false;
-        }
-        // Иначе - попадание
-        else {
-            // 2. Считаем изначальный урон:
-            int baseDamage = monster.getDamage();
-            double oldPlayerHealth = player.getHealth();
-
-            // 3. Применяем бонусы защиты (щит воина если есть)
-            int finalDamage = applyDefenseBonuses(player, monster, baseDamage);
-
-            SleepTime.sleep(300);
-            System.out.println("Монстр " + monster.getName() + " атакует " + player.getName() + " и наносит " +
-                    finalDamage + " урона! (выпало: " + randomRoll + ")");
-
-            // 4. Вычитаем урон из здоровья цели
-            player.takeDamage(finalDamage);
-            SleepTime.sleep(300);
-            System.out.println("\nОчки здоровья игрока: " + oldPlayerHealth + " --> " + player.getHealth() + "\n");
-            SleepTime.sleep(300);
-
-            // 5. Проверяем, не умерла ли цель
-            if (!player.isAlive()) {
-                SleepTime.sleepSeconds(300);
-                System.out.println("--------------------------------------------");
-                System.out.println(player.getName() + " был побеждён монстром " + monster.getName() + "!");
-                System.out.println("--------------------------------------------\n");
-                SleepTime.sleepSeconds(2);
-            }
-
-            return true;
         }
     }
 
@@ -316,4 +267,126 @@ public class BattleSystem {
 
         return finalDamage;
     }
+
+    // Метод для применения уязвимостей монстров
+    private static int applyMonsterVulnerabilities(Character player, Monster monster, int baseDamage) {
+        int bonus = 0;
+
+        // Для Скелета - двойной урон от дробящего оружия
+        if (monster instanceof Skeleton) {
+            Skeleton skeleton = (Skeleton) monster;
+            Weapon playerWeapon = player.getMainClass().getStartWeapon();
+            bonus = skeleton.applyBluntWeaponVulnerability(playerWeapon, baseDamage);
+        }
+
+        // Для других монстров можно добавить их уязвимости
+
+        return bonus;
+    }
+
+    // Метод для применения иммунитетов монстров
+    private static int applyMonsterImmunities(Character player, Monster monster, int totalDamage) {
+        int finalDamage = totalDamage;
+
+        // Для Слайма - иммунитет к рубящему оружию
+        if (monster instanceof Slime) {
+            Slime slime = (Slime) monster;
+            Weapon playerWeapon = player.getMainClass().getStartWeapon();
+            int weaponDamage = playerWeapon.getDamage();
+            int bonusDamage = totalDamage - weaponDamage; // Рассчитываем бонусный урон
+            finalDamage = slime.applySlashingImmunity(playerWeapon, weaponDamage, bonusDamage);
+        }
+
+        return finalDamage;
+    }
+
+
+
+    //  метод для атаки монстра
+    public static boolean monsterAttack(Monster monster, Character player, int turnCounter) {
+        SleepTime.sleep(300);
+        System.out.println("-------------\n" + "Атака монстра\n" + "-------------");
+
+        // 1. Вычисляем шанс попадания: случайное число от 1 до суммы ловкости атакующего и цели
+        int totalAgility = monster.getAgility() + player.getAgility();
+        int randomRoll = (int) (Math.random() * totalAgility) + 1;
+
+        // Если число меньше или равно ловкости цели - атака промахнулась
+        if (randomRoll <= player.getAgility()) {
+            SleepTime.sleep(300);
+            System.out.println("Монстр " + monster.getName() + " промахивается! (выпало: " + randomRoll +
+                    ", нужно больше " + player.getAgility() + ")\n");
+            SleepTime.sleep(300);
+            return false;
+        }
+        else {
+            // 2. Считаем изначальный урон:
+            int baseDamage = monster.getDamage();
+            double oldPlayerHealth = player.getHealth();
+
+            // 3. Применяем специальные способности монстра
+            int specialBonus = applyMonsterSpecialBonuses(monster, player, turnCounter);
+            int totalDamage = baseDamage + specialBonus;
+
+            // 4. Применяем бонусы защиты (щит воина если есть)
+            int finalDamage = applyDefenseBonuses(player, monster, totalDamage);
+
+            SleepTime.sleep(300);
+            System.out.println("Монстр " + monster.getName() + " атакует " + player.getName() + " и наносит " +
+                    finalDamage + " урона! (выпало: " + randomRoll + ")");
+
+            // 5. Вычитаем урон из здоровья цели
+            player.takeDamage(finalDamage);
+            SleepTime.sleep(300);
+            System.out.println("\nОчки здоровья игрока: " + oldPlayerHealth + " --> " + player.getHealth() + "\n");
+            SleepTime.sleep(300);
+
+            // 6. Проверяем, не умерла ли цель
+            if (!player.isAlive()) {
+                SleepTime.sleep(300);
+                System.out.println("--------------------------------------------");
+                System.out.println(player.getName() + " был побеждён монстром " + monster.getName() + "!");
+                System.out.println("--------------------------------------------\n");
+                SleepTime.sleepSeconds(2);
+            }
+
+            return true;
+        }
+    }
+
+    // Метод для применения специальных бонусов монстров
+    private static int applyMonsterSpecialBonuses(Monster monster, Character target, int turnCount) {
+        int bonus = 0;
+
+        // Для Призрака - скрытая атака
+        if (monster instanceof Ghost) {
+            Ghost ghost = (Ghost) monster;
+            bonus = ghost.applySneakAttackBonus(target);
+        }
+
+        // Для Дракона - огненное дыхание каждый 3-й ход
+        if (monster instanceof Dragon) {
+            Dragon dragon = (Dragon) monster;
+            bonus = dragon.applyFireBreathBonus(turnCount);
+        }
+
+        return bonus;
+    }
+
+    // Метод для применений защит монстров
+    private static int applyMonsterDefenses(Monster monster, int incomingDamage) {
+        int finalDamage = incomingDamage;
+
+        // Для Голема - каменная кожа
+        if (monster instanceof Golem) {
+            Golem golem = (Golem) monster;
+            finalDamage = golem.applyStoneSkin(incomingDamage);
+        }
+
+        // Для других монстров можно добавить их защиты
+
+        return finalDamage;
+    }
+
+
 }
