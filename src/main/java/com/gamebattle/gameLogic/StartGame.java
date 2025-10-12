@@ -21,10 +21,10 @@ public class StartGame {
     public static void main(String[] args) throws CharacterCreationException {
         GameState.resetAll();
 
-//        welcomeMessage();
-//        getGameInformation();
+        welcomeMessage();
+        getGameInformation();
         getCharacter();
-//        getIntroductionInformation();
+        getIntroductionInformation();
         startGameLoop();
     }
 
